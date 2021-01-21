@@ -1,6 +1,6 @@
 # Overview
 
-The Data Insertion API supports HTTP POST for submitting JSON-formatted data to Adobe Experience Cloud servers. HTTP GET method and XML formatting are supported by Data Insertion API 1.4 but not API 2.0. We recommend using Data Insertion API 2.0 for any new implementations.
+The Data Insertion API supports HTTP POST for submitting JSON-formatted data to Adobe Experience Cloud servers. HTTP GET method and XML formatting are supported by [Data Insertion API 1.4] (https://github.com/AdobeDocs/analytics-1.4-apis/blob/master/docs/data-insertion-api/index.md) but not API 2.0. We recommend using Data Insertion API 2.0 for any new implementations.
 
 The Data Insertion API provides a mechanism for server-side data collection and submission to Experience Cloud servers. Instead of using JavaScript beacons on each Web page to transmit visitor data to Experience Cloud servers, server-side data collection collects data based solely on Web browser requests and Web server responses.
 
