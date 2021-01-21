@@ -1,12 +1,12 @@
 # Overview
 
-The Data Insertion API supports HTTP POST and HTTP GET for submitting data to Adobe Experience Cloud servers.
+The Data Insertion API supports HTTP POST for submitting JSON-formatted data to Adobe Experience Cloud servers. HTTP GET method and XML formatting are supported by Data Insertion API 1.4 but not API 2.0. We recommend using Data Insertion API 2.0 for any new implementations.
 
 The Data Insertion API provides a mechanism for server-side data collection and submission to Experience Cloud servers. Instead of using JavaScript beacons on each Web page to transmit visitor data to Experience Cloud servers, server-side data collection collects data based solely on Web browser requests and Web server responses.
 
 While this data capture method cannot capture all data that is available via page-based beacons, it provides valuable insight into user activity on your Web pages without the overhead associated with attaching a JavaScript beacon to every Web page.
 
-**Note**: Data Insertion API and Bulk Data Insertion API are both methods to submit server-side collection data to Adobe Analytics. Data Insertion API calls are made one event at a time. Bulk Data Insertion API accepts CSV formatted files containing event data, one event per row. If you are working on a new implementation of server-side collection, we recommend using Bulk Data Insertion API.
+**Note**: Data Insertion API and Bulk Data Insertion API are both methods to submit server-side collection data to Adobe Analytics. Data Insertion API calls are made one event at a time. Bulk Data Insertion API accepts CSV formatted files containing event data, one event per row. 
 
 # Data Insertion Process
 The Data Insertion API supports HTTP POST for submitting data to Adobe Experience Cloud servers.
@@ -22,11 +22,9 @@ http://namespace.sc.omtrdc.net/b/ss//7 [tbd]
 
 Note: The "7" [tbd] code at the end of the URL indicates that the data submission requires JSON processing.
 
-Upon receipt, Adobe servers perform basic tag validation of the data insertion. If it encounters an error, Adobe returns a Failure response. If the data insertion is successful, Adobe queues the data insertion request for processing by the standard Analytics Data Processing Engine. The engine processes these requests in the same way it processes data collected via JavaScript.
-
 When using HTTP POST with the Data Insertion API, consider the following:
 
-The Data Insertion API requires data in UTF-8 format. Specify the character encoding in the opening XML tag, as shown in XML Data Insertion Format.
+The Data Insertion API requires data in UTF-8 format. [TBD - how his this updated?] Specify the character encoding in the opening XML tag, as shown in XML Data Insertion Format.
 Replace Ampersand (&), greater-than (>), and less-than (<) symbols with their HTML equivalents when passing them into a Analytics variable. For example, submit <evar1>News & Sports <local> </evar1> as <evar1>News &amp; Sports &lt;local&gt; </evar1>.
 To submit data over an encrypted connection, the application must be configured to support HTTPS POST commands. Some tools that let you do this include:
 PHP versions 4.3.0 and higher support OpenSSL, and can be used to POST data through SSL port 443. You can see an example of this in Sample Data Insertion (PHP).
@@ -35,7 +33,7 @@ Microsoft .Net Framework version 1.1 supports the HTTP header: Expect: 100-Conti
 
 Upon receipt, Adobe servers perform basic tag validation of the data insertion. If it encounters an error, Adobe returns a Failure response. If the data insertion is successful, Adobe queues the data insertion request for processing by the standard Analytics Data Processing Engine. The engine processes these requests in the same way it processes data collected via JavaScript.
 
-Note: The Data Insertion API requires data in UTF-8 format.
+Note: The Data Insertion API requires data in UTF-8 format.[tbd - still true?]
 
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -94,7 +92,7 @@ There are some limitations to server-side data collection when compared to clien
 -   You must have control over the servers from which you want to collect data. If you use a Content Delivery Network \(CDN\) such as Akamai\* to deliver web pages, the server-side data collection described here cannot collect data for those pages.
 -   If you control most of your Web site pages, but use some third-party services \(for example, surveys or shopping cart systems\), server-side data collection cannot collect data from the third-party pages. You should use JavaScript tagging on third-party pages that request content from your Web servers to gain visibility into those systems.
 -   Server-side data collection alone cannot provide cross-domain tracking of site visitors. However, you can use the `<visitorID>` tag in conjunction with client-side JavaScript data collection to pass additional information to the server. This is the only way that cross-domain tracking is possible when using a `<visitorID>`.
--   Server-side data collection can co-exist with a client-side \(JavaScript\) implementation only if clients submit server-side data in near real-time. If clients have a JavaScript beacon implementation, and want to collect server-side data and submit it in batches, they should use Data Sources, not the Data Insertion API.
+-   Server-side data collection can co-exist with a client-side \(JavaScript\) implementation only if clients submit server-side data in near real-time. [tbd- do we want to continue to support this?]  If clients have a JavaScript beacon implementation, and want to collect server-side data and submit it in batches, they should use Data Sources, not the DataInsertion API.
 
  -----------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -106,8 +104,6 @@ To ensure accurate visit number values, visit counts, and event attribution on p
 
 In some situations, it is possible to see two hits with the same time-stamp. For example, two hits might have the same time-stamp if an auto-playing video fires during the same second that the page loads. If two hits for one visitor have the same time-stamp, and order matters for those hits \(one contains variables that should persist to the next one\), you can change the time-stamp of the second hit by one second so we sort the two correctly.
 
- 
-
 The Analytics data processing engine closes a visit after 30 minutes of inactivity. For time-stamped data, if the difference between time-stamps is greater than 30 minutes, the visit number is incremented and a new visit is counted.
 
  -----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -116,7 +112,7 @@ The Analytics data processing engine closes a visit after 30 minutes of inactivi
 
 To track site visitors, each visitor must have a unique *visitor ID*. Ideally, this is a persistent cookie with an extended expiration period.
 
-Use the `visitorID` tag, the combination of IP address and `userAgent`, to submit visitor ID information to Adobe data collection servers.
+Use the `visitorID` tag, the combination of IP address and `userAgent`, to submit visitor ID information to Adobe data collection servers. [tbd - true?? can DIA use the client cookie as a 'seed']]
 
 If the data insertion includes a `visitorID`, the Analytics Data Processing Engine assumes that persistent cookies are enabled for the visitor's Web browser. If the data insertion identifies visitors using IP address/User Agent, Analytics displays persistent cookies for that visitor as disabled.
 
@@ -126,7 +122,7 @@ The visitor ID is critical for linking a visitor's activities captured via JavaS
 
 ## Custom Visitor IDs
 
-Typically, the client systems generate unique visitor identifiers that you can use as the `visitorID` value. We recommend generating your own visitor ID, in both the XML and in the JavaScript so that the values match.
+Typically, the client systems generate unique visitor identifiers that you can use as the `visitorID` value. We recommend generating your own visitor ID, in both the JSON and in the JavaScript so that the values match.
 
 If you are generating your own visitor ID, it can be up to 100 alpha-numeric characters and cannot contain a hyphen.
 
@@ -162,17 +158,11 @@ Make sure you check for both the Experience Cloud ID and the Analytics Visitor I
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 
-# XML Encoding
+# JSON Encoding
 
  
 
-XML data sent to the data insertion API must be in UTF-8 and the special XML characters need to be replaced with entities:
-
-|Character|XML Entity|
-|---------|----------|
-|&|&amp;|
-|<|&lt;|
-|\>|&gt;|
+[TBD JSON formatting details]
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -180,11 +170,11 @@ XML data sent to the data insertion API must be in UTF-8 and the special XML cha
 
 The Data Insertion API supports these response messages to HTTP POST operations.
 
-The following table lists all supported XML tags, along with their associated JavaScript variable equivalents and HTTP header variable equivalents, where applicable.
+The following table lists all supported JSON tags, along with their associated JavaScript variable equivalents and HTTP header variable equivalents, where applicable.
 
  
 
-ponse messages can help you understand and correct the problem.
+Response messages can help you understand and correct the problem.
 
 | POST Response | Description |
 |-----------------|---------------|
@@ -199,15 +189,15 @@ ponse messages can help you understand and correct the problem.
 
 # Supported XML Tags and Query Variables
 
-When processing HTTP POST data submissions, only values in supported XML tags are processed. When submitting HTTP GET data submissions, only specified query string and HTTP header variables are processed.
+When processing HTTP POST data submissions, only values in supported JSON tags are processed. 
 
-The following table lists all supported XML tags, along with their associated query string variable equivalents and HTTP header variable equivalents, where applicable. The JavaScript variable column is provided for reference. Details about each of these variables is provided in the [Analytics Variables](http://microsite.omniture.com/t2/help/en_US/sc/implement/?f=sc_variables) topic in the *Analytics Implementation Guide*.
+The following table lists all supported JSON tags, along with their associated query string variable equivalents and HTTP header variable equivalents, where applicable. The JavaScript variable column is provided for reference. Details about each of these variables is provided in the [Analytics Variables](http://microsite.omniture.com/t2/help/en_US/sc/implement/?f=sc_variables) topic in the *Analytics Implementation Guide*.
 
 To specify that a given row should be considered a page view, that row must contain either `<pageName>` or `<pageURL>`. To specify that a given row should be considered a link event, that row must include `<linkType>` and either `<linkName>` or `<linkURL>`. If a given row contains both `<linkType>` and either `<pageName>` or `<pageURL>`, Adobe Analytics will automatically clear out `<pageName>` and `<pageURL>` by setting them to `null`. Also, if a given row does not contain the minimum fields required to fully identify the row as either a page view or a link event, that row will be dropped.
 
 Every data insertion must also include one of `<visitorID>`, `<marketingCloudVisitorID>` or `<IPaddress>`.
 
-**Note:** XML tags are case-insensitive, capitalization is used only to assist readability.
+**Note:** XML tags are case-insensitive, capitalization is used only to assist readability. [TBD- Applies to JSON?]
 
 |XML Tag \(POST\)|Query String Parameter \(GET\)|JavaScript Variable|HTTP Header Var|Description|
 |----------------|------------------------------|-------------------|---------------|-----------|
@@ -265,12 +255,10 @@ Every data insertion must also include one of `<visitorID>`, `<marketingCloudVis
 
 -   **[HTTP POST Sample](../sample_code/r_sample_http_post.md)**  
  This sample displays the structure of an HTTP POST request and response using the Data Insertion API.
--   **[HTTP GET Sample](../sample_code/r_sample_http_get.md)**  
- This sample displays the structure of an HTTP GET request and response using the Data Insertion API.
 -   **[Data Insertion Sample \(PHP\)](../sample_code/r_sample_php.md)**  
  This PHP sample illustrates how to connect to Adobe data collection servers and record a page view.
 -   **[Data Insertion Sample \(Java\)](../sample_code/r_sample_java.md)**  
- This Java sample illustrates how to use Java classes to send an XML request.
+ This Java sample illustrates how to use Java classes to send an JSON request.
 -   **[Data Insertion Sample \(Python\)](../sample_code/r_sample_python.md)**  
  This Python sample illustrates how to access the Data Insertion API.
 
